@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Add repository
+sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu jammy-backports main" -y
+
+# Update package list
+sudo apt update -y
+
+# Install necessary packages
+sudo apt-get install nginx python3-pip python3-venv -y
+
+# Create and activate virtual environment
+python3 -m venv myenv
+source myenv/bin/activate
+
+# Install Python packages
+pip install Flask psycopg2-binary
+
+# Stop nginx
+sudo systemctl stop nginx
+
+# Download nginx configuration
+sudo curl -o /etc/nginx/sites-available/default https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/nginx
+
+# Start nginx
+sudo systemctl start nginx
+
+#Make the Directories
+sudo mkdir /myapp
+sudo mkdir /myapp/templates
+
+# Download app.py
+sudo curl -o /myapp/app.py https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/app.py
+
+sudo curl -o /myapp/template/index.html https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/index.html
+
+# Run app.py
+python /myapp/app.py
+
+#Download Service File
+sudo curl -o /etc/systemd/system/flask-app.service https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/flask-app.service
+
+# Enable and Start the Service
+sudo systemctl enable flask-app
+sudo systemctl start flask-app
+
+# Restart nginx
+sudo systemctl restart nginx
+
+echo "All steps completed successfully."
