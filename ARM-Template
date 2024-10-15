@@ -354,7 +354,7 @@
             "computerName": "DBvm",
             "adminUsername": "azureadmin",
             "adminPassword": "[parameters('adminPassword')]",
-            "customData": "curl -s https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/db-deploy | bash"
+            "customData": "Y3VybCAtcyBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vQ29sdG9uRHgvTWVudG9yc2hpcC9yZWZzL2hlYWRzL21haW4vZGItZGVwbG95IHwgYmFzaAo="
           },
           "networkProfile": {
             "networkInterfaces": [
