@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coltons Demo</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif; /* Use Roboto font */
+            background-image: url('https://cdn.wccftech.com/wp-content/uploads/2020/02/download-windows-10-wallpaper-7-scaled.jpg');
+            background-size: cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .header-container {
+            background-color: rgba(30, 30, 30, 0.95); /* Darker gray */
+            padding: 20px;
+            text-align: center;
+            width: 100%; /* Full width */
+            position: fixed;
+            top: 0;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 1em;
+        }
+        .content {
+            margin-top: 70px; /* Space for the header */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        form {
+            margin-top: 20px;
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            width: 60%;
+            margin-top: -120px; /* Move it up a lot */
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 70%; /* Increased width */
+            margin: auto;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark translucent background */
+        }
+        th, td {
+            border: 1px solid white;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: rgba(76, 175, 80, 0.7); /* Semi-transparent green */
+        }
+        ul {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .github-link {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            text-decoration: none;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .github-link img {
+            margin-right: 5px;
+        }
+    </style>
+    <script>
+        function validateInput(event) {
+            const pattern = /[^a-zA-Z]/g;
+            if(pattern.test(event.target.value)) {
+                event.target.value = event.target.value.replace(pattern, '');
+            }
+        }
+
+        function validateForm(event) {
+            const searchInput = document.querySelector('input[name="search"]');
+            if (!searchInput.value.trim()) {
+                alert('Please enter a search term.');
+                event.preventDefault();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="header-container">
+        <h1>User Lookup</h1>
+        <h2>A Basic Python Demo for Azure Linux Mentorship</h2>
+    </div>
+    <div class="content">
+        <form method="POST" onsubmit="validateForm(event)">
+            <input type="text" name="search" placeholder="Search for a user..." oninput="validateInput(event)">
+            <button type="submit">Search</button>
+        </form>
+        {% if search_performed %}
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
+            <tbody id="user-data">
+            {% for user in users %}
+                <tr>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[2] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <a class="github-link" href="https://github.com/ColtonDx/Mentorship/tree/main" target="_blank">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub logo" width="20" height="20">
+        See the Repo!
+    </a>
+</body>
+</html>
