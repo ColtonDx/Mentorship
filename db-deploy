@@ -1,0 +1,12 @@
+#!/bin/bash
+sudo apt install postgresql postgresql-contrib -y
+sudo -i -u postgres psql -c "CREATE DATABASE mydatabase;"
+sudo -i -u postgres psql -c "CREATE USER mydbuser WITH PASSWORD MyDBPassword;"
+sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE MyDatabase TO mydbuser;"
+echo "host    all             all             0.0.0.0/0               md5" | sudo tee -a /etc/postgresql/*/main/pg_hba.conf
+sudo sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/g" $postgresql_conf
+sudo systemctl restart postgres
+sudo -u postgres psql -d mydatabase -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name FIRST NOT NULL, LAST TEXT NOT NULL);"
+sudo -u postgres psql -d mydatabase -c "INSERT INTO users (FIRST, LAST) VALUES ('Colton', 'Dixon');"
+sudo -u postgres psql -d mydatabase -c "INSERT INTO users (FIRST, LAST) VALUES ('John', 'Doe');"
+sudo -u postgres psql -d mydatabase -c "GRANT ALL PRIVILEGES ON TABLE users TO mydbuser;"
