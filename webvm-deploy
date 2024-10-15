@@ -31,11 +31,8 @@ sudo mkdir /myapp/templates
 
 # Download app.py
 sudo curl -o /myapp/app.py https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/app.py
+sudo curl -o /myapp/templates/index.html https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/index.html
 
-sudo curl -o /myapp/template/index.html https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/index.html
-
-# Run app.py
-python /myapp/app.py
 
 #Download Service File
 sudo curl -o /etc/systemd/system/flask-app.service https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/flask-app.service
