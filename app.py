@@ -8,7 +8,7 @@ def get_random_row():
     conn = psycopg2.connect(
         dbname="MyDatabase", 
         user="MyDBUser", 
-        password="YourPassword", 
+        password="MyDBPassword, 
         host="10.0.0.2"
     )
     cur = conn.cursor()
