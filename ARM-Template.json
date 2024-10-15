@@ -354,7 +354,7 @@
             "computerName": "DBvm",
             "adminUsername": "azureadmin",
             "adminPassword": "[parameters('adminPassword')]",
-            "customData": "Yc3VkbyBjdXJsIC1zIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Db2x0b25EeC9NZW50b3JzaGlwL3JlZnMvaGVhZHMvbWFpbi9kYi1kZXBsb3kgfCBzdWRvIGJhc2gK"
+            "customData": "c3VkbyBjdXJsIC1zIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Db2x0b25EeC9NZW50b3JzaGlwL3JlZnMvaGVhZHMvbWFpbi9kYi1kZXBsb3kgfCBzdWRvIGJhc2gK"
           },
           "networkProfile": {
             "networkInterfaces": [
