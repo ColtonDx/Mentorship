@@ -1,12 +1,23 @@
 #!/bin/bash
+
 sudo apt install postgresql postgresql-contrib -y
+
+# Create database and user
 sudo -i -u postgres psql -c "CREATE DATABASE mydatabase;"
 sudo -i -u postgres psql -c "CREATE USER mydbuser WITH PASSWORD 'MyDBPassword';"
-sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE MyDatabase TO mydbuser;"
-echo "host    all             all             0.0.0.0/0               md5" | sudo tee -a /etc/postgresql/*/main/pg_hba.conf
-sudo sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/g" $postgresql_conf
-sudo systemctl restart postgres
-sudo -u postgres psql -d mydatabase -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name FIRST NOT NULL, LAST TEXT NOT NULL);"
-sudo -u postgres psql -d mydatabase -c "INSERT INTO users (FIRST, LAST) VALUES ('Colton', 'Dixon');"
-sudo -u postgres psql -d mydatabase -c "INSERT INTO users (FIRST, LAST) VALUES ('John', 'Doe');"
+sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mydatabase TO mydbuser;"
+
+# Configure PostgreSQL to accept remote connections
+echo "host    all             all             0.0.0.0/0               md5" | sudo tee -a /etc/postgresql/12/main/pg_hba.conf
+
+# Ensure the correct path for postgresql.conf
+sudo sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/postgresql/12/main/postgresql.conf
+
+# Restart PostgreSQL service
+sudo systemctl restart postgresql
+
+# Create table and insert data
+sudo -u postgres psql -d mydatabase -c "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, first_name TEXT NOT NULL, last_name TEXT NOT NULL);"
+sudo -u postgres psql -d mydatabase -c "INSERT INTO users (first_name, last_name) VALUES ('Colton', 'Dixon');"
+sudo -u postgres psql -d mydatabase -c "INSERT INTO users (first_name, last_name) VALUES ('John', 'Doe');"
 sudo -u postgres psql -d mydatabase -c "GRANT ALL PRIVILEGES ON TABLE users TO mydbuser;"
