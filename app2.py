@@ -6,13 +6,13 @@ app = Flask(__name__)
 
 def get_random_row():
     conn = psycopg2.connect(
-        dbname="MyDatabase", 
-        user="MyDBUser", 
+        dbname="mydatabase", 
+        user="mydbuser", 
         password="MyDBPassword", 
-        host="10.0.0.2"
+        host="10.0.0.5"
     )
     cur = conn.cursor()
-    cur.execute("SELECT * FROM your_table ORDER BY random() LIMIT 1;")
+    cur.execute("SELECT * FROM users ORDER BY random() LIMIT 1;")
     row = cur.fetchone()
     cur.close()
     conn.close()
