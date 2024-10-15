@@ -3,7 +3,7 @@ Description=Flask App Service
 After=network.target
 
 [Service]
-User=your_username
+User=azureadmin
 WorkingDirectory=/myapp
 ExecStart=/usr/bin/python /myapp/app.py
 Restart=always
