@@ -694,7 +694,10 @@
       "apiVersion": "2024-03-01",
       "name": "WEBvm",
       "location": "[resourceGroup().location]",
-      "dependsOn": ["[resourceId('Microsoft.Network/networkInterfaces', 'WEBvm-nic')]"],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'WEBvm-nic')]",
+        "[resourceId('Microsoft.Compute/virtualMachines', 'RouterVM')]"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_DS1_v2"
@@ -753,7 +756,8 @@
       "name": "DBvm",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'DBvm-nic')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', 'DBvm-nic')]",
+        "[resourceId('Microsoft.Compute/virtualMachines', 'RouterVM')]"
       ],
       "properties": {
         "hardwareProfile": {
