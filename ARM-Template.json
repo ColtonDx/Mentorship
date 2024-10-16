@@ -360,6 +360,26 @@
             }
           },
           {
+          "name": "AllowRoutertoEverything",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow the Router Outbound",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationApplicationSecurityGroups": null,
+            "destinationPortRange": "5432",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 205,
+            "Protocol": "TCP",
+            "sourceAddressPrefix": "10.0.1.5",
+            "sourceAddressPrefixes": [],
+            "sourceApplicationSecurityGroups": null,
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          }
+        },
+          {
             "name": "CustomDefaultDeny",
             "properties": {
               "access": "Deny",
