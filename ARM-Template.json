@@ -28,7 +28,7 @@
                 }},
       "RouterScript": {
           "type": "string",
-           "defaultValue": "https://github.com/ColtonDx/Mentorship/blob/Router/DeploymentScripts/RouterDeploy",
+           "defaultValue": "https://raw.githubusercontent.com/ColtonDx/Mentorship/Router/DeploymentScripts/RouterDeploy",
             "metadata": {
               "description": "URL Of the DB-Deploy Script"
                     }}
