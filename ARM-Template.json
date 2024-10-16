@@ -14,19 +14,19 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
               }
             },
-      "WebScript-URL": {
+      "WebScript": {
               "type": "string",
               "defaultValue": "https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/Router/DeploymentScripts/WebVM-Deploy",
               "metadata": {
                 "description": "URL Of the Web-Deploy Script"
               }},
-      "DBScript-URL": {
+      "DBScript": {
               "type": "string",
               "defaultValue": "https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/Router/DeploymentScripts/DB-Deploy",
               "metadata": {
                 "description": "URL Of the DB-Deploy Script"
                 }},
-      "RouterScript-URL": {
+      "RouterScript": {
           "type": "string",
            "defaultValue": "https://github.com/ColtonDx/Mentorship/blob/Router/DeploymentScripts/RouterDeploy",
             "metadata": {
@@ -34,9 +34,9 @@
                     }}
   },
   "variables": {
-    "Router-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('scriptUrl'), ' | sudo bash'))]",
-    "Web-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('scriptUrl'), ' | sudo bash'))]",
-    "DB-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('scriptUrl'), ' | sudo bash'))]"
+    "Router-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('RouterScript'), ' | sudo bash'))]",
+    "Web-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('WebScript'), ' | sudo bash'))]",
+    "DB-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('DBScript'), ' | sudo bash'))]"
   },
   "resources": [
     {
@@ -511,3 +511,4 @@
     }
   ]
 }
+
