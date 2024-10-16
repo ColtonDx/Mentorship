@@ -367,7 +367,7 @@
             "destinationAddressPrefix": "*",
             "destinationAddressPrefixes": [],
             "destinationApplicationSecurityGroups": null,
-            "destinationPortRange": "5432",
+            "destinationPortRange": "*",
             "destinationPortRanges": [],
             "direction": "Outbound",
             "priority": 205,
