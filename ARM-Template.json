@@ -300,7 +300,7 @@
               },
               "networkSecurityGroup": {
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'DemoNSG')]"
-            }
+            }}
           }
           ]
       }
@@ -570,4 +570,3 @@
     }
   ]
 }
-
