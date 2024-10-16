@@ -42,7 +42,7 @@
       {
         "type": "Microsoft.Network/routeTables",
         "apiVersion": "2021-02-01",
-        "name": "DemoRouteTable",
+        "name": "Web-UDR",
         "location": "[resourceGroup().location]",
         "properties": {
             "routes": [
@@ -53,18 +53,28 @@
                         "nextHopType": "VirtualAppliance",
                         "nextHopIpAddress": "10.0.1.5"
                     }
-                },
-                {
-                    "name": "ToWebSubnet",
-                    "properties": {
-                        "addressPrefix": "10.0.1.0/24",
-                        "nextHopType": "VirtualAppliance",
-                        "nextHopIpAddress": "10.0.2.5"
-                    }
                 }
             ]
         }
     },
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2021-02-01",
+      "name": "DB-UDR",
+      "location": "[resourceGroup().location]",
+      "properties": {
+          "routes": [
+              {
+                  "name": "ToWebSubnet",
+                  "properties": {
+                      "addressPrefix": "10.0.1.0/24",
+                      "nextHopType": "VirtualAppliance",
+                      "nextHopIpAddress": "10.0.2.5"
+                  }
+              }
+          ]
+      }
+  },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2020-06-01",
@@ -270,7 +280,7 @@
             "properties": {
               "addressPrefix": "10.0.1.0/24",
               "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables', 'DemoRouteTable')]"
+                                "id": "[resourceId('Microsoft.Network/routeTables', 'Web-UDR')]"
               }
             }
           },
@@ -279,7 +289,7 @@
             "properties": {
               "addressPrefix": "10.0.2.0/24",
               "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables', 'DemoRouteTable')]"
+                                "id": "[resourceId('Microsoft.Network/routeTables', 'DB-UDR')]"
               }
             }
           }
