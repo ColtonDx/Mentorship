@@ -252,7 +252,7 @@
               "priority": 104,
               "protocol": "TCP",
               "provisioningState": "Succeeded",
-              "sourceAddressPrefix": "104.128.8.121",
+              "sourceAddressPrefix": "Any,
               "sourceAddressPrefixes": [],
               "sourceApplicationSecurityGroups": null,
               "sourcePortRange": "*",
