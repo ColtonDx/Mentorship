@@ -21,3 +21,8 @@ sudo -u postgres psql -d mydatabase -c "CREATE TABLE IF NOT EXISTS users (id SER
 sudo -u postgres psql -d mydatabase -c "INSERT INTO users (first_name, last_name) VALUES ('Colton', 'Dixon');"
 sudo -u postgres psql -d mydatabase -c "INSERT INTO users (first_name, last_name) VALUES ('John', 'Doe');"
 sudo -u postgres psql -d mydatabase -c "GRANT ALL PRIVILEGES ON TABLE users TO mydbuser;"
+
+#Firewall Rules
+sudo ufw allow from 10.0.1.4 to any port 5432
+sudo ufw allow proto tcp from 10.0.1.5 to any port 22
+sudo ufw enable
