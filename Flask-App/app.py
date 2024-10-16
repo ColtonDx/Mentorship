@@ -8,7 +8,7 @@ def get_db_connection():
         dbname="mydatabase",
         user="mydbuser",
         password="MyDBPassword",
-        host="10.0.0.5",
+        host="10.0.2.4",
         port="5432"
     )
     return conn
