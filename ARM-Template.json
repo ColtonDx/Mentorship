@@ -39,6 +39,32 @@
     "DB-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('DBScript'), ' | sudo bash'))]"
   },
   "resources": [
+      {
+        "type": "Microsoft.Network/routeTables",
+        "apiVersion": "2021-02-01",
+        "name": "DemoRouteTable",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "routes": [
+                {
+                    "name": "ToDBSubnet",
+                    "properties": {
+                        "addressPrefix": "10.0.2.0/24",
+                        "nextHopType": "VirtualAppliance",
+                        "nextHopIpAddress": "10.0.1.5"
+                    }
+                },
+                {
+                    "name": "ToWebSubnet",
+                    "properties": {
+                        "addressPrefix": "10.0.1.0/24",
+                        "nextHopType": "VirtualAppliance",
+                        "nextHopIpAddress": "10.0.2.5"
+                    }
+                }
+            ]
+        }
+    },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2020-06-01",
@@ -242,13 +268,19 @@
           {
             "name": "WebSubnet",
             "properties": {
-              "addressPrefix": "10.0.1.0/24"
+              "addressPrefix": "10.0.1.0/24",
+              "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', 'DemoRouteTable')]"
+              }
             }
           },
           {
             "name": "DBSubnet",
             "properties": {
-              "addressPrefix": "10.0.2.0/24"
+              "addressPrefix": "10.0.2.0/24",
+              "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', 'DemoRouteTable')]"
+              }
             }
           }
           ]
@@ -318,6 +350,7 @@
         "[resourceId('Microsoft.Network/virtualNetworks', 'My-Vnet')]"
       ],    
       "properties": {
+        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -344,6 +377,7 @@
         "[resourceId('Microsoft.Network/virtualNetworks', 'My-Vnet')]"
       ],
       "properties": {
+        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
