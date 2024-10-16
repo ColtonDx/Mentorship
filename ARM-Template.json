@@ -295,6 +295,7 @@
         "[resourceId('Microsoft.Network/virtualNetworks', 'My-Vnet')]"
       ],    
       "properties": {
+        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -324,6 +325,7 @@
         "[resourceId('Microsoft.Network/virtualNetworks', 'My-Vnet')]"
       ],    
       "properties": {
+        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -350,7 +352,6 @@
         "[resourceId('Microsoft.Network/virtualNetworks', 'My-Vnet')]"
       ],    
       "properties": {
-        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -377,7 +378,6 @@
         "[resourceId('Microsoft.Network/virtualNetworks', 'My-Vnet')]"
       ],
       "properties": {
-        "enableIPForwarding": true,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
