@@ -246,14 +246,113 @@
               "destinationApplicationSecurityGroups": null,
               "destinationPortRange": null,
               "destinationPortRanges": [
-                "80",
-                "5000"
+                "80"
               ],
               "direction": "Inbound",
               "priority": 104,
               "protocol": "TCP",
               "provisioningState": "Succeeded",
               "sourceAddressPrefix": "104.128.8.121",
+              "sourceAddressPrefixes": [],
+              "sourceApplicationSecurityGroups": null,
+              "sourcePortRange": "*",
+              "sourcePortRanges": []
+            }
+          },
+          {
+            "name": "AllowWebApptoPostgres",
+            "properties": {
+              "access": "Allow",
+              "description": "Allow the WebApp to Connect to Postgres",
+              "destinationAddressPrefix": "10.0.2.4",
+              "destinationAddressPrefixes": [],
+              "destinationApplicationSecurityGroups": null,
+              "destinationPortRange": "5432",
+              "destinationPortRanges": [],
+              "direction": "Outbound",
+              "priority": 200,
+              "Protocol": "TCP",
+              "sourceAddressPrefix": "10.0.1.4",
+              "sourceAddressPrefixes": [],
+              "sourceApplicationSecurityGroups": null,
+              "sourcePortRange": "*",
+              "sourcePortRanges": []
+            }
+          },
+          {
+            "name": "AllowLANtoGW",
+            "properties": {
+              "access": "Allow",
+              "description": "Allow the two VMs to Connect to the Firewall",
+              "destinationAddressPrefix": "10.0.2.5,10.0.1.5",
+              "destinationAddressPrefixes": [],
+              "destinationApplicationSecurityGroups": null,
+              "destinationPortRange": "*",
+              "destinationPortRanges": [],
+              "direction": "Outbound",
+              "priority": 201,
+              "Protocol": "Any",
+              "sourceAddressPrefix": "10.0.2.4,10.0.1.4",
+              "sourceAddressPrefixes": [],
+              "sourceApplicationSecurityGroups": null,
+              "sourcePortRange": "*",
+              "sourcePortRanges": []
+            }
+          },
+          {
+            "name": "AllowICMP",
+            "properties": {
+              "access": "Allow",
+              "description": "Allow Ping",
+              "destinationAddressPrefix": "Any",
+              "destinationAddressPrefixes": [],
+              "destinationApplicationSecurityGroups": null,
+              "destinationPortRange": "*",
+              "destinationPortRanges": [],
+              "direction": "Outbound",
+              "priority": 202,
+              "Protocol": "ICMP",
+              "sourceAddressPrefix": "Any",
+              "sourceAddressPrefixes": [],
+              "sourceApplicationSecurityGroups": null,
+              "sourcePortRange": "*",
+              "sourcePortRanges": []
+            }
+          },
+          {
+            "name": "AllowPivotSSH",
+            "properties": {
+              "access": "Allow",
+              "description": "Allow SSH from Router to Other Nodes",
+              "destinationAddressPrefix": "10.0.1.4,10.0.2.4",
+              "destinationAddressPrefixes": [],
+              "destinationApplicationSecurityGroups": null,
+              "destinationPortRange": "22",
+              "destinationPortRanges": [],
+              "direction": "Outbound",
+              "priority": 203,
+              "Protocol": "TCP",
+              "sourceAddressPrefix": "10.0.1.5,10.0.2.5",
+              "sourceAddressPrefixes": [],
+              "sourceApplicationSecurityGroups": null,
+              "sourcePortRange": "*",
+              "sourcePortRanges": []
+            }
+          },
+          {
+            "name": "CustomDefaultDeny",
+            "properties": {
+              "access": "Deny",
+              "description": "Deny Outbound Default",
+              "destinationAddressPrefix": "Any",
+              "destinationAddressPrefixes": [],
+              "destinationApplicationSecurityGroups": null,
+              "destinationPortRange": "*",
+              "destinationPortRanges": [],
+              "direction": "Outbound",
+              "priority": 204,
+              "Protocol": "Any",
+              "sourceAddressPrefix": "10.0.0.0/16",
               "sourceAddressPrefixes": [],
               "sourceApplicationSecurityGroups": null,
               "sourcePortRange": "*",
