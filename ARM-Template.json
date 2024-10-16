@@ -252,7 +252,7 @@
               "priority": 104,
               "protocol": "TCP",
               "provisioningState": "Succeeded",
-              "sourceAddressPrefix": "Any",
+              "sourceAddressPrefix": "*",
               "sourceAddressPrefixes": [],
               "sourceApplicationSecurityGroups": null,
               "sourcePortRange": "*",
