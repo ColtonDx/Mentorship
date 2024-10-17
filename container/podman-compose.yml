@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   postgres:
-    image: postgres:latest
+    image: docker.io/library/postgres:latest
     environment:
       POSTGRES_PASSWORD: "${POSTPASS}"
     networks:
@@ -13,6 +13,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
+    image: docker.io/libary/nginx:latest
     ports:
       - "80:80"
     depends_on:
