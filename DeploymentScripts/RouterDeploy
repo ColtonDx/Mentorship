@@ -6,8 +6,17 @@ echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
 # Apply the changes
 sudo sysctl -p
 
-# Allow SSH traffic on eth0
+# Setup NAT for internet access via eth0 (assuming eth0 is the interface with 10.0.3.5)
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+# Allow SSH traffic on eth0 from any source
 sudo iptables -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
+
+# Allow HTTP traffic on eth0
+sudo iptables -A INPUT -i eth0 -p tcp --dport 80 -j ACCEPT
+
+# Allow all outbound traffic
+sudo iptables -A OUTPUT -j ACCEPT
 
 # Drop all other incoming traffic on eth0
 sudo iptables -A INPUT -i eth0 -j DROP
@@ -42,4 +51,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable iptables-restore.service
 sudo systemctl start iptables-restore.service
 
-echo "Only SSH allowed on eth0, all other traffic dropped."
+echo "IP forwarding enabled, NAT and port forwarding configured, traffic filtering on eth0 applied, and settings made persistent."
