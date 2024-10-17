@@ -536,7 +536,7 @@
                 }
               ],
               "networkSecurityGroup": {
-              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'WAN-NSG'))]"
+              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'WAN-NSG')]"
                 }
             }
           },
@@ -653,6 +653,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC1')]",
+        "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC0')]",
        "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC2')]"
                     ],
       "properties": {
