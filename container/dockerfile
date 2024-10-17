@@ -24,6 +24,10 @@ RUN curl -o /etc/nginx/nginx.conf https://raw.githubusercontent.com/ColtonDx/Men
 RUN python3 -m venv /myapp/venv
 RUN /myapp/venv/bin/pip install flask psycopg2-binary
 
+# Add PostPass
+ARG POSTPASS
+RUN sed -i "s/password=\"MyDBPassword\"/password=\"$POSTPASS\"/" /myapp/app.py
+
 # Expose the necessary ports
 EXPOSE 80
 
