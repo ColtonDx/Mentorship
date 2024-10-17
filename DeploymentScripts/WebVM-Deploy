@@ -50,7 +50,7 @@ sudo ufw allow proto tcp from 10.0.1.5 to any port 22
 sudo ufw enable
 
 #Install AppArmor
-sudo apt-get install apparmor-profiles apparmor-utils
+sudo apt-get install apparmor-profiles apparmor-utils -y
 sudo systemctl stop apparmor
 
 # Create AppArmor profile directory if not exists
