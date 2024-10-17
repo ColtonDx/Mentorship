@@ -520,7 +520,7 @@
                 }
               ],
               "networkSecurityGroup": {
-              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'WAN-NSG'"
+              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'WAN-NSG')]"
                 }
             }
           },
