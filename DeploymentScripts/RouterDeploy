@@ -12,6 +12,10 @@ sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 # Setup port forwarding from public IP (10.0.3.5) to 10.0.1.4 on port 80
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 10.0.1.4:80
 
+# Filter incoming traffic on eth0 to allow only port 80
+sudo iptables -A INPUT -i eth0 -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -i eth0 -j DROP
+
 # Save the iptables rules
 sudo mkdir -p /etc/iptables
 sudo iptables-save | sudo tee /etc/iptables/rules.v4
@@ -42,4 +46,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable iptables-restore.service
 sudo systemctl start iptables-restore.service
 
-echo "IP forwarding enabled, NAT and port forwarding configured, and settings made persistent."
+echo "IP forwarding enabled, NAT and port forwarding configured, traffic filtering on eth0 applied, and settings made persistent."
