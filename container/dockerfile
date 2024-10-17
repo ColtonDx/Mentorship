@@ -1,0 +1,32 @@
+# Base Image
+FROM nginx:latest
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    curl
+
+#Install DB Connector
+RUN pip3 install psycopg2-binary
+
+# Set up the working directory
+WORKDIR /myapp
+
+# Make the Templates DIR
+RUN mkdir -p /myapp/templates
+
+# Install Flask
+RUN pip3 install flask
+
+# Fetch the configs from GitHub
+RUN curl -o /etc/nginx/sites-available/default https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/nginx
+RUN curl -o /etc/nginx/nginx.conf https://raw.githubusercontent.com/your-username/your-repo/main/nginx.conf
+RUN curl -o /myapp/app.py https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/app.py
+RUN curl -o /myapp/templates/index.html https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/index.html
+
+# Expose the necessary ports
+EXPOSE 80
+
+# Command to run the Flask app on container start
+CMD ["python3", "/myapp/app.py"]
