@@ -49,6 +49,49 @@ sudo ufw allow 80/tcp
 sudo ufw allow proto tcp from 10.0.1.5 to any port 22
 sudo ufw enable
 
-echo "All steps completed successfully."
+#Install AppArmor
+sudo apt-get install apparmor-profiles apparmor-utils
+sudo systemctl stop apparmor
 
+# Create AppArmor profile directory if not exists
+sudo mkdir -p /etc/apparmor.d
+
+# Create the AppArmor profile file
+sudo tee /etc/apparmor.d/usr.sbin.nginx <<EOT
+abi <abi/3.0>
+include <tunables/global>
+
+/usr/sbin/nginx {
+  include <abstractions/apache2-common>
+  include <abstractions/base>
+  include <abstractions/openssl>
+  capability dac_override,
+  /usr/sbin/nginx mr,
+  /var/log/nginx/error.log w,
+  owner /etc/group r,
+  owner /etc/nginx/conf.d/ r,
+  owner /etc/nginx/mime.types r,
+  owner /etc/nginx/modules-enabled/ r,
+  owner /etc/nginx/nginx.conf r,
+  owner /etc/nginx/sites-available/default r,
+  owner /etc/nginx/sites-enabled/ r,
+  owner /etc/nsswitch.conf r,
+  owner /etc/passwd r,
+  owner /run/nginx.pid rw,
+  owner /usr/share/nginx/modules-available/mod-http-geoip2.conf r,
+  owner /usr/share/nginx/modules-available/mod-http-image-filter.conf r,
+  owner /usr/share/nginx/modules-available/mod-http-xslt-filter.conf r,
+  owner /usr/share/nginx/modules-available/mod-mail.conf r,
+  owner /usr/share/nginx/modules-available/mod-stream-geoip2.conf r,
+  owner /usr/share/nginx/modules-available/mod-stream.conf r,
+}
+EOT
+
+# Apply the AppArmor profile
+sudo apparmor_parser -r -W /etc/apparmor.d/usr.sbin.nginx
+
+# Ensure AppArmor service is enabled and start the service
+sudo systemctl enable apparmor
+sudo systemctl start
+sudo aa-enforce nginx
 
