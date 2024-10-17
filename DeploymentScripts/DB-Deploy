@@ -29,7 +29,7 @@ sudo ufw enable
 
 # Install AppArmor
 sudo apt-get update
-sudo apt-get install -y apparmor-profiles apparmor-utils
+sudo apt-get install -y apparmor-profiles apparmor-utils -y
 
 # Create AppArmor profile directory if not exists
 sudo mkdir -p /etc/apparmor.d
