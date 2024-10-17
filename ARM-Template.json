@@ -33,6 +33,7 @@
               "description": "URL Of the DB-Deploy Script"
                     }}
   },
+  //THIS IS A TEST COMMENT ABOVE VARIABLES
   "variables": {
     "Router-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('RouterScript'), ' | sudo bash'))]",
     "Web-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('WebScript'), ' | sudo bash'))]",
