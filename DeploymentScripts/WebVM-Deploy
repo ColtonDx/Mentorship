@@ -49,23 +49,23 @@ sudo ufw allow 80/tcp
 sudo ufw allow proto tcp from 10.0.1.5 to any port 22
 sudo ufw enable
 
-#Install AppArmor
-sudo apt-get install apparmor-profiles apparmor-utils -y
-sudo systemctl stop apparmor
+# Install AppArmor
+sudo apt-get install -y apparmor-profiles apparmor-utils
 
 # Create AppArmor profile directory if not exists
 sudo mkdir -p /etc/apparmor.d
 
 # Create the AppArmor profile file
 sudo tee /etc/apparmor.d/usr.sbin.nginx <<EOT
-abi <abi/3.0>
-include <tunables/global>
+#include <tunables/global>
 
 /usr/sbin/nginx {
-  include <abstractions/apache2-common>
-  include <abstractions/base>
-  include <abstractions/openssl>
+  #include <abstractions/apache2-common>
+  #include <abstractions/base>
+  #include <abstractions/openssl>
+
   capability dac_override,
+
   /usr/sbin/nginx mr,
   /var/log/nginx/error.log w,
   owner /etc/group r,
@@ -92,6 +92,7 @@ sudo apparmor_parser -r -W /etc/apparmor.d/usr.sbin.nginx
 
 # Ensure AppArmor service is enabled and start the service
 sudo systemctl enable apparmor
-sudo systemctl start
-sudo aa-enforce nginx
+sudo systemctl start apparmor
 
+# Enforce the profile
+sudo aa-enforce usr.sbin.nginx
