@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: "${POSTPASS}"
+    networks:
+      internal_net:
+        ipv4_address: 10.0.0.5
+
+  flask_nginx:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+    networks:
+      internal_net:
+        ipv4_address: 10.0.0.4
+
+networks:
+  internal_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
