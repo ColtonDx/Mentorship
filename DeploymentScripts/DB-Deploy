@@ -26,3 +26,38 @@ sudo -u postgres psql -d mydatabase -c "GRANT ALL PRIVILEGES ON TABLE users TO m
 sudo ufw allow from 10.0.1.4 to any port 5432
 sudo ufw allow proto tcp from 10.0.1.5 to any port 22
 sudo ufw enable
+
+# Install AppArmor
+sudo apt-get update
+sudo apt-get install -y apparmor-profiles apparmor-utils
+
+# Create AppArmor profile directory if not exists
+sudo mkdir -p /etc/apparmor.d
+
+# Create the AppArmor profile file
+sudo tee /etc/apparmor.d/usr.lib.postgresql.14.bin.postgres <<EOT
+#include <tunables/global>
+
+# profile definition for PostgreSQL 14
+/usr/lib/postgresql/14/bin/postgres {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  /etc/postgresql/** r,
+  /usr/share/postgresql/** r,
+  /var/lib/postgresql/** rwl,
+  /{,var/}run/postgresql/** rw,
+  owner @{PROC}/14/oom_adj rw,
+}
+EOT
+
+# Apply the AppArmor profile
+sudo apparmor_parser -r -W /etc/apparmor.d/usr.lib.postgresql.14.bin.postgres
+
+# Ensure AppArmor service is enabled and start the service
+sudo systemctl enable apparmor
+sudo systemctl start apparmor
+
+# Enforce the profile
+sudo aa-enforce /etc/apparmor.d/usr.lib.postgresql.14.bin.postgres
+
