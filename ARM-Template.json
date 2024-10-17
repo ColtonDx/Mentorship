@@ -57,7 +57,7 @@
             {
               "name": "InternalSubnet",
               "properties": {
-                  "addressPrefix": "10.0.0.0/16",
+                  "addressPrefix": "10.0.2.0/24",
                   "nextHopType": "VirtualAppliance",
                   "nextHopIpAddress": "10.0.1.5"
               }
@@ -81,9 +81,9 @@
                   }
               },
               {
-                "name": "IInternalSubnet",
+                "name": "InternalSubnet",
                 "properties": {
-                    "addressPrefix": "10.0.0.0/16",
+                    "addressPrefix": "10.0.1.0/24",
                     "nextHopType": "VirtualAppliance",
                     "nextHopIpAddress": "10.0.2.5"
                 }
