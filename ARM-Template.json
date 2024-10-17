@@ -396,66 +396,6 @@
               "sourcePortRange": "*",
               "sourcePortRanges": []
             }
-          },
-          {
-            "name": "AllowICMP",
-            "properties": {
-              "access": "Allow",
-              "description": "Allow Ping",
-              "destinationAddressPrefix": "*",
-              "destinationAddressPrefixes": [],
-              "destinationApplicationSecurityGroups": null,
-              "destinationPortRange": "*",
-              "destinationPortRanges": [],
-              "direction": "Outbound",
-              "priority": 203,
-              "Protocol": "ICMP",
-              "sourceAddressPrefix": "*",
-              "sourceAddressPrefixes": [],
-              "sourceApplicationSecurityGroups": null,
-              "sourcePortRange": "*",
-              "sourcePortRanges": []
-            }
-          },
-          {
-            "name": "AllowPivotSSH",
-            "properties": {
-              "access": "Allow",
-              "description": "Allow SSH from Router to Other Nodes",
-              "destinationAddressPrefix": "10.0.0.0/16",
-              "destinationAddressPrefixes": [],
-              "destinationApplicationSecurityGroups": null,
-              "destinationPortRange": "22",
-              "destinationPortRanges": [],
-              "direction": "Outbound",
-              "priority": 204,
-              "Protocol": "TCP",
-              "sourceAddressPrefix": "10.0.0.0/16",
-              "sourceAddressPrefixes": [],
-              "sourceApplicationSecurityGroups": null,
-              "sourcePortRange": "*",
-              "sourcePortRanges": []
-            }
-          },
-          {
-            "name": "CustomDefaultDeny",
-            "properties": {
-              "access": "Deny",
-              "description": "Deny Outbound Default",
-              "destinationAddressPrefix": "Internet",
-              "destinationAddressPrefixes": [],
-              "destinationApplicationSecurityGroups": null,
-              "destinationPortRange": "*",
-              "destinationPortRanges": [],
-              "direction": "Outbound",
-              "priority": 210,
-              "Protocol": "*",
-              "sourceAddressPrefix": "10.0.0.0/16",
-              "sourceAddressPrefixes": [],
-              "sourceApplicationSecurityGroups": null,
-              "sourcePortRange": "*",
-              "sourcePortRanges": []
-            }
           }
         ]
       }
@@ -653,7 +593,6 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC1')]",
-        "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC0')]",
        "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC2')]"
                     ],
       "properties": {
