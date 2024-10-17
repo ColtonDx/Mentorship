@@ -35,7 +35,7 @@
   },
   //THIS IS A TEST COMMENT ABOVE VARIABLES
   "variables": {
-    "Router-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('RouterScript'), ' | sudo bash'))]",
+    "Router-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('RouterScript'), ' | sudo bash'))]", //INLINE COMMENT
     "Web-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('WebScript'), ' | sudo bash'))]",
     "DB-customData": "[base64(concat('#!/bin/bash\nsudo curl ', parameters('DBScript'), ' | sudo bash'))]"
   },
