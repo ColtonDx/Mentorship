@@ -46,14 +46,22 @@
         "location": "[resourceGroup().location]",
         "properties": {
             "routes": [
-                {
-                    "name": "ToDBSubnet",
-                    "properties": {
-                        "addressPrefix": "0.0.0.0/0",
-                        "nextHopType": "VirtualAppliance",
-                        "nextHopIpAddress": "10.0.1.5"
-                    }
+              {
+                "name": "InternettoRouter",
+                "properties": {
+                    "addressPrefix": "0.0.0.0/0",
+                    "nextHopType": "VirtualAppliance",
+                    "nextHopIpAddress": "10.0.1.5"
                 }
+            },
+            {
+              "name": "InternalSubnet",
+              "properties": {
+                  "addressPrefix": "10.0.0.0/16",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.0.1.5"
+              }
+          }
             ]
         }
     },
@@ -65,13 +73,21 @@
       "properties": {
           "routes": [
               {
-                  "name": "ToWebSubnet",
+                  "name": "InternettoRouter",
                   "properties": {
                       "addressPrefix": "0.0.0.0/0",
                       "nextHopType": "VirtualAppliance",
                       "nextHopIpAddress": "10.0.2.5"
                   }
-              }
+              },
+              {
+                "name": "IInternalSubnet",
+                "properties": {
+                    "addressPrefix": "10.0.0.0/16",
+                    "nextHopType": "VirtualAppliance",
+                    "nextHopIpAddress": "10.0.2.5"
+                }
+            }
           ]
       }
   },
@@ -520,7 +536,7 @@
                 }
               ],
               "networkSecurityGroup": {
-              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'WAN-NSG')]"
+              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
                 }
             }
           },
@@ -637,8 +653,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC1')]",
-        "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC0')]",
-        "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC2')]"
+       "[resourceId('Microsoft.Network/networkInterfaces', 'RouterVM-NIC2')]"
                     ],
       "properties": {
         "hardwareProfile": {
@@ -695,10 +710,7 @@
       "apiVersion": "2024-03-01",
       "name": "WEBvm",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'WEBvm-nic')]",
-        "[resourceId('Microsoft.Compute/virtualMachines', 'RouterVM')]"
-      ],
+      "dependsOn": ["[resourceId('Microsoft.Network/networkInterfaces', 'WEBvm-nic')]"],
       "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_DS1_v2"
@@ -757,8 +769,7 @@
       "name": "DBvm",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'DBvm-nic')]",
-        "[resourceId('Microsoft.Compute/virtualMachines', 'RouterVM')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', 'DBvm-nic')]"
       ],
       "properties": {
         "hardwareProfile": {
