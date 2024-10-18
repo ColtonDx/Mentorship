@@ -5,7 +5,7 @@ sudo snap install lxd
 sudo lxd init
 
 #Setup the Bridge
-sudo lxc network create BridgeNet
+sudo lxc network create BridgeNet ipv4.address=10.0.0.1/24 ipv4.nat=true ipv6.address=none
 
 #Create Postgres Profile
 sudo lxc profile create postgres-profile
