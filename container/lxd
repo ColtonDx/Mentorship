@@ -1,3 +1,9 @@
+#Enable Snap
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+sudo dnf upgrade
+sudo yum install snapd
+sudo systemctl enable --now snapd.socket
+
 #Install LXD
 sudo snap install lxd
 
@@ -10,9 +16,11 @@ sudo lxc network create BridgeNet ipv4.address=10.0.0.1/24 ipv4.nat=true ipv6.ad
 #Create Postgres Profile
 sudo lxc profile create postgres-profile
 sudo lxc profile device add postgres-profile eth0 nic nictype=bridged parent=BridgeNet name=eth0 ipv4.address=10.0.0.5
+sudo lxc profile device add postgres-profile root disk path=/ pool=default
+
 
 #Deploy Postgres Container
-sudo lxc launch ubuntu:22.04 postgres-container --network BridgeNet
+sudo lxc launch ubuntu:22.04 postgres-container --profile postgres-profile
 
 #Curl the Postgres Configuration
 sudo lxc exec postgres-container -- /bin/bash -c "curl -sL https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/db-deploy | bash"
@@ -20,6 +28,8 @@ sudo lxc exec postgres-container -- /bin/bash -c "curl -sL https://raw.githubuse
 #Create Nginx Profile
 sudo lxc profile create nginx-profile
 sudo lxc profile device add nginx-profile eth0 nic nictype=bridged parent=BridgeNet name=eth0 ipv4.address=10.0.0.4
+sudo lxc profile device add nginx-profile root disk path=/ pool=default
+
 
 #Create Nginx Container
 sudo lxc launch ubuntu:22.04 nginx-container --profile nginx-profile
