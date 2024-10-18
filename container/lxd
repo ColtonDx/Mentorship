@@ -1,0 +1,31 @@
+#Install LXD
+sudo snap install lxd
+
+#Initialize LXD
+sudo lxd init
+
+#Setup the Bridge
+sudo lxc network create BridgeNet
+
+#Create Postgres Profile
+sudo lxc profile create postgres-profile
+sudo lxc profile device add postgres-profile eth0 nic nictype=bridged parent=BridgeNet name=eth0 ipv4.address=10.0.0.5
+
+#Deploy Postgres Container
+sudo lxc launch ubuntu:22.04 postgres-container --network BridgeNet
+
+#Curl the Postgres Configuration
+sudo lxc exec postgres-container -- /bin/bash -c "curl -sL https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/db-deploy | bash"
+
+#Create Nginx Profile
+sudo lxc profile create nginx-profile
+sudo lxc profile device add nginx-profile eth0 nic nictype=bridged parent=BridgeNet name=eth0 ipv4.address=10.0.0.4
+
+#Create Nginx Container
+sudo lxc launch ubuntu:22.04 nginx-container --profile nginx-profile
+
+#Configure Nginx
+sudo lxc exec nginx-container -- /bin/bash -c "curl -sL https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/webvm-deploy | bash"
+
+#Expose Nginx
+sudo lxc config device add nginx-container myport80 proxy listen=tcp:0.0.0.0:80 connect=tcp:10.0.0.4:80
