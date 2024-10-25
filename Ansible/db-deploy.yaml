@@ -82,17 +82,16 @@
         template: template0
       register: db_creation
 
-    - name: Check if users table exists
-      become_user: postgres
-      shell: "psql -d mydatabase -tAc \"SELECT 1 FROM pg_tables WHERE tablename='users';\""
-      register: table_exists
-      ignore_errors: yes
-
     - name: Create users table if it does not exist
-      become_user: postgres
-      shell: "CREATE TABLE users (first_name varchar(255), last_name varchar(255));"
-      when: table_exists.stdout == ''
-
+      postgresql_query:
+        db: mydatabase
+        query: |
+          DO $$
+          BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'users') THEN
+              CREATE TABLE users (first_name varchar(255), last_name varchar(255));
+            END IF;
+          END $$;
     - name: Add user John Doe to users table
       become_user: postgres
       postgresql_query:
@@ -106,6 +105,7 @@
         query:  "INSERT INTO users (first_name, last_name) VALUES ('Colton', 'Dixon');"
 
     - name: Grant all privileges on users table to mydbuser
+      #become_user: postgres
       postgresql_privs:
         db: mydatabase
         role: mydbuser
