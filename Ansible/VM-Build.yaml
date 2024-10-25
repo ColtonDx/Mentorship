@@ -127,14 +127,14 @@
   - name: Add WebVM to dynamic inventory
     add_host:
       name: WebVM
-      ansible_host: "{{ web_pub.ip_address }}"
+      ansible_host: "{{ web_pub_ip.azure_public_ipaddress.ip_address }}"
       ansible_user: "{{ username }}"
       groups: web
 
   - name: Add DBVM to dynamic inventory
     add_host:
       name: DBVM
-      ansible_host: "{{ db_pub.ip_address }}"
+      ansible_host: "{{ db_public_ip.azure_public_ipaddress.ip_address }}"
       ansible_user: "{{ username }}"
       groups: db
 
@@ -209,3 +209,15 @@
       boot_diagnostics:
         enabled: true
         type: managed
+
+  - name: Run web-deploy.yaml on WebVM
+    include_role:
+      name: web-deploy
+    vars:
+      ansible_host: "{{ web_pub.ip_address }}"
+
+  - name: Run db-deploy.yaml on DBVM
+    include_role:
+      name: db-deploy
+    vars:
+      ansible_host: "{{ db_pub.ip_address }}"
