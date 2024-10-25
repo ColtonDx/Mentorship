@@ -1,0 +1,94 @@
+---
+- name: Configure PostgreSQL Database
+  hosts: db
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Install PostgreSQL
+      apt:
+        name: postgresql
+        state: present
+        update_cache: yes
+
+    - name: Start PostgreSQL service
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    - name: Create PostgreSQL database
+      postgresql_db:
+        name: mydatabase
+        state: present
+
+    - name: Create PostgreSQL user
+      postgresql_user:
+        name: mydbuser
+        password: MyDBPassword
+        state: present
+
+    - name: Grant all privileges on database
+      postgresql_privs:
+        db: mydatabase
+        role: mydbuser
+        type: database
+        privs: ALL
+
+    - name: Configure PostgreSQL to allow all incoming connections
+      lineinfile:
+        path: /etc/postgresql/12/main/pg_hba.conf
+        regexp: '^(host\s+all\s+all\s+127.0.0.1/32\s+md5)'
+        line: 'host all all 0.0.0.0/0 md5'
+        state: present
+
+    - name: Listen for all connections
+      lineinfile:
+        path: /etc/postgresql/12/main/postgresql.conf
+        regexp: '^#?(listen_addresses)\s*=\s*\S+'
+        line: "listen_addresses = '*'"
+        state: present
+
+    - name: Restart PostgreSQL service
+      service:
+        name: postgresql
+        state: restarted
+
+    - name: Create users table
+      postgresql_db:
+        name: mydatabase
+        state: present
+        encoding: UTF-8
+        lc_collate: C
+        lc_ctype: C
+        template: template0
+      register: db_creation
+
+    - name: Create table users
+      postgresql_table:
+        name: users
+        db: mydatabase
+        columns:
+          - name: first_name
+            type: varchar(255)
+          - name: last_name
+            type: varchar(255)
+        state: present
+
+    - name: Add user John Doe to users table
+      postgresql_query:
+        db: mydatabase
+        query: "INSERT INTO users (first_name, last_name) VALUES ('John', 'Doe');"
+
+    - name: Add user Colton Dixon to users table
+      postgresql_query:
+        db: mydatabase
+        query: "INSERT INTO users (first_name, last_name) VALUES ('Colton', 'Dixon');"
+
+    - name: Grant all privileges on users table to mydbuser
+      postgresql_privs:
+        db: mydatabase
+        role: mydbuser
+        type: table
+        table: users
+        privs: ALL
