@@ -42,6 +42,11 @@
       args:
         creates: /etc/nginx/sites-available/default
 
+    - name: Curl Nginx Configuration from Github
+      shell: curl -o /etc/nginx/sites-enabled/default https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/nginx
+      args:
+        creates: /etc/nginx/sites-enabled/default
+
     - name: Create directories
       file:
         path: "{{ item }}"
