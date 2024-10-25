@@ -22,8 +22,23 @@
         name: flask
         executable: pip3
 
+    - name: Stop nginx service
+      service:
+        name: nginx
+        state: stopped
+
+    - name: Remove default site-enabled configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Remove default site-available configuration
+      file:
+        path: /etc/nginx/sites-available/default
+        state: absent
+
     - name: Curl Nginx Configuration from Github
-      shell: curl -L https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/nginx -o /etc/nginx/sites-available/default
+      shell: curl -o /etc/nginx/sites-available/default https://raw.githubusercontent.com/ColtonDx/Mentorship/refs/heads/main/nginx
       args:
         creates: /etc/nginx/sites-available/default
 
