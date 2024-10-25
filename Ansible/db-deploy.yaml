@@ -7,15 +7,49 @@
   tasks:
     - name: Install PostgreSQL
       apt:
-        name: postgresql
+        name:
+          - python3-pip
+          - libpq-dev
+          - postgresql
+          - acl
         state: present
         update_cache: yes
+
+    - name: Install psycopg2-binary with pip
+      pip:
+        name: psycopg2-binary
+        executable: pip3
 
     - name: Start PostgreSQL service
       service:
         name: postgresql
         state: started
         enabled: yes
+
+    - name: Set PostgreSQL user to use trust authentication
+      lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        regexp: '^local\s+all\s+postgres\s+peer$'
+        line: 'local all postgres trust'
+        state: present
+
+    - name: Restart PostgreSQL service
+      service:
+        name:
+
+    - name: Configure PostgreSQL to allow all incoming connections
+      lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        regexp: '^(host\s+all\s+all\s+127.0.0.1/32\s+md5)'
+        line: 'host all all 0.0.0.0/0 md5'
+        state: present
+
+    - name: Listen for all connections
+      lineinfile:
+        path: /etc/postgresql/14/main/postgresql.conf
+        regexp: '^#?(listen_addresses)\s*=\s*\S+'
+        line: "listen_addresses = '*'"
+        state: present
 
     - name: Create PostgreSQL database
       postgresql_db:
@@ -35,20 +69,6 @@
         type: database
         privs: ALL
 
-    - name: Configure PostgreSQL to allow all incoming connections
-      lineinfile:
-        path: /etc/postgresql/12/main/pg_hba.conf
-        regexp: '^(host\s+all\s+all\s+127.0.0.1/32\s+md5)'
-        line: 'host all all 0.0.0.0/0 md5'
-        state: present
-
-    - name: Listen for all connections
-      lineinfile:
-        path: /etc/postgresql/12/main/postgresql.conf
-        regexp: '^#?(listen_addresses)\s*=\s*\S+'
-        line: "listen_addresses = '*'"
-        state: present
-
     - name: Restart PostgreSQL service
       service:
         name: postgresql
@@ -59,36 +79,36 @@
         name: mydatabase
         state: present
         encoding: UTF-8
-        lc_collate: C
-        lc_ctype: C
         template: template0
       register: db_creation
 
-    - name: Create table users
-      postgresql_table:
-        name: users
-        db: mydatabase
-        columns:
-          - name: first_name
-            type: varchar(255)
-          - name: last_name
-            type: varchar(255)
-        state: present
+    - name: Check if users table exists
+      become_user: postgres
+      shell: "psql -d mydatabase -tAc \"SELECT 1 FROM pg_tables WHERE tablename='users';\""
+      register: table_exists
+      ignore_errors: yes
+
+    - name: Create users table if it does not exist
+      become_user: postgres
+      shell: "CREATE TABLE users (first_name varchar(255), last_name varchar(255));"
+      when: table_exists.stdout == ''
 
     - name: Add user John Doe to users table
+      become_user: postgres
       postgresql_query:
         db: mydatabase
         query: "INSERT INTO users (first_name, last_name) VALUES ('John', 'Doe');"
 
     - name: Add user Colton Dixon to users table
+      become_user: postgres
       postgresql_query:
         db: mydatabase
-        query: "INSERT INTO users (first_name, last_name) VALUES ('Colton', 'Dixon');"
+        query:  "INSERT INTO users (first_name, last_name) VALUES ('Colton', 'Dixon');"
 
     - name: Grant all privileges on users table to mydbuser
       postgresql_privs:
         db: mydatabase
         role: mydbuser
         type: table
-        table: users
+        objs: users
         privs: ALL
