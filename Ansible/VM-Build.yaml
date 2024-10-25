@@ -115,28 +115,14 @@
       resource_group: "{{ resource_group}}"
       allocation_method: Static
       name: Web-IP
-    register: Web-Pub
+    register: web_public_ip
 
   - name: Create public IP address
     azure_rm_publicipaddress:
       resource_group: "{{ resource_group}}"
       allocation_method: Static
       name: DB-IP
-    register: DB-Pub
-
-  - name: Add WebVM to dynamic inventory
-    add_host:
-      name: WebVM
-      ansible_host: "{{ web_pub_ip.azure_public_ipaddress.ip_address }}"
-      ansible_user: "{{ username }}"
-      groups: web
-
-  - name: Add DBVM to dynamic inventory
-    add_host:
-      name: DBVM
-      ansible_host: "{{ db_public_ip.azure_public_ipaddress.ip_address }}"
-      ansible_user: "{{ username }}"
-      groups: db
+    register: db_public_ip
 
   - name: Create virtual network interface card
     azure_rm_networkinterface:
@@ -210,14 +196,24 @@
         enabled: true
         type: managed
 
+  # Add VMs to dynamic inventory
+  - name: Add WebVM to dynamic inventory
+    add_host:
+      name: WebVM
+      ansible_host: "{{ web_public_ip.state.ip_address }}"
+      ansible_user: azureuser
+      groups: web
+
+  - name: Add DBVM to dynamic inventory
+    add_host:
+      name: DBVM
+      ansible_host: "{{ db_public_ip.state.ip_address }}"
+      ansible_user: azureuser
+      groups: db
+
+# Run playbooks on respective VMs
   - name: Run web-deploy.yaml on WebVM
-    include_role:
-      name: web-deploy
-    vars:
-      ansible_host: "{{ web_pub.ip_address }}"
+    command: "ansible-playbook web-deploy.yaml -i {{ web_public_ip.state.ip_address }}"
 
   - name: Run db-deploy.yaml on DBVM
-    include_role:
-      name: db-deploy
-    vars:
-      ansible_host: "{{ db_pub.ip_address }}"
+    command: "ansible-playbook db-deploy.yaml -i {{ db_public_ip.state.ip_address }}"
