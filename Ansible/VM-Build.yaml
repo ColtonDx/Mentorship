@@ -7,9 +7,10 @@
      prompt: "Please name the deployment"
 
   vars:
-    username: "azureadmin"
+    username: "dxadmin"
     password: "SecurePassword123"
     resourcegroup: 
+
   tasks:
 
   - name: Create resource group
@@ -21,7 +22,7 @@
   - name: Create virtual network
     azure_rm_virtualnetwork:
       resource_group: "{{ resource_group}}"
-      name: ControlPlane-Vnet
+      name: "{{ resource_group }}-Vnet"
       address_prefixes: "10.0.0.0/16"
       state: present
 
@@ -30,34 +31,120 @@
       resource_group: "{{ resource_group}}"
       name: Ansible-Subnet
       address_prefix: "10.0.0.0/24"
-      virtual_network: ControlPlane-Vnet
+      virtual_network: "{{ resource_group }}-Vnet"
       state: present
 
-  - name: Create Network Security Group that allows SSH
+  - name: Create network security group
     azure_rm_securitygroup:
-      resource_group: "{{ resource_group}}"
-      name: Ansible-RG
-      state: present
+      name: "{{ resource_group }}-NSG"
+      resource_group: "{{ resource_group }}"
+      rules:
+          - name: inbound_ssh
+            access: Allow
+            description: Inbound SSH access to port 22.
+            destination_address_prefix: VirtualNetwork
+            destination_port_range: 22
+            direction: Inbound
+            priority: 100
+            protocol: Tcp
+            source_address_prefix: 104.128.8.121
+            source_port_range: "*"
+          - name: CASG-Rule-104
+            access: Deny
+            description: CSS Governance Security Rule. Deny risky inbound.
+            destination_address_prefix: "*"
+            destination_port_range: "*"
+            direction: Inbound
+            priority: 204
+            protocol: "*"
+            source_address_prefix: Internet
+            source_port_range: "*"
+          - name: CASG-Rule-103
+            access: Allow
+            description: CSS Governance Security Rule. Allow SAW inbound.
+            destination_address_prefix: "*"
+            destination_port_range: "*"
+            direction: Inbound
+            priority: 103
+            protocol: "*"
+            source_address_prefix: CorpNetSaw
+            source_port_range: "*"
+          - name: CASG-Rule-101
+            access: Allow
+            description: CSS Governance Security Rule. Allow vnet inbound.
+            destination_address_prefix: "*"
+            destination_port_range: "*"
+            direction: Inbound
+            priority: 101
+            protocol: "*"
+            source_address_prefix: VirtualNetwork
+            source_port_range: "*"
+          - name: CASG-Rule-102
+            access: Allow
+            description: CSS Governance Security Rule. Allow Corpnet inbound.
+            destination_address_prefix: "*"
+            destination_port_range: "*"
+            direction: Inbound
+            priority: 102
+            protocol: "*"
+            source_address_prefix: CorpNetPublic
+            source_port_range: "*"
+          - name: inbound_web_http
+            access: Allow
+            description: Inbound HTTP from home.
+            destination_address_prefix: VirtualNetwork
+            destination_port_range: 80
+            direction: Inbound
+            priority: 104
+            protocol: Tcp
+            source_address_prefix: 104.128.8.121
+            source_port_range: "*"
+          - name: inbound_web_https
+            access: Allow
+            description: Inbound HTTPS from home.
+            destination_address_prefix: VirtualNetwork
+            destination_port_range: 5000
+            direction: Inbound
+            priority: 105
+            protocol: Tcp
+            source_address_prefix: 104.128.8.121
+            source_port_range: "*"
 
   - name: Create public IP address
     azure_rm_publicipaddress:
       resource_group: "{{ resource_group}}"
       allocation_method: Static
       name: Web-IP
+    register: Web-Pub
 
   - name: Create public IP address
     azure_rm_publicipaddress:
       resource_group: "{{ resource_group}}"
       allocation_method: Static
       name: DB-IP
+    register: DB-Pub
+
+  - name: Add WebVM to dynamic inventory
+    add_host:
+      name: WebVM
+      ansible_host: "{{ web_pub_ip.azure_public_ipaddress.ip_address }}"
+      ansible_user: "{{ username }}"
+      groups: web
+
+  - name: Add DBVM to dynamic inventory
+    add_host:
+      name: DBVM
+      ansible_host: "{{ db_pub.azure_public_ipaddress.ip_address }}"
+      ansible_user: "{{ username }}"
+      groups: db
 
   - name: Create virtual network interface card
     azure_rm_networkinterface:
       resource_group: "{{ resource_group}}"
       name: VM01-NIC
-      virtual_network: ControlPlane-Vnet
+      virtual_network: "{{ resource_group }}-Vnet"
       subnet: Ansible-Subnet
-      security_group: Ansible-RG
+      security_group: "{{ resource_group }}-NSG"
       ip_configurations:
         - name: ipconfig1
           private_ip_address: 10.0.0.4 
@@ -69,9 +156,9 @@
     azure_rm_networkinterface:
       resource_group: "{{ resource_group}}"
       name: VM02-NIC
-      virtual_network: ControlPlane-Vnet
+      virtual_network: "{{ resource_group }}-Vnet"
       subnet: Ansible-Subnet
-      security_group: Ansible-RG
+      security_group: "{{ resource_group }}-NSG"
       ip_configurations:
         - name: ipconfig1
           private_ip_address: 10.0.0.5 
@@ -79,15 +166,18 @@
           public_ip_address_name: DB-IP
       state: present
 
-  - name: Create VM
+  - name: Create Web VM
     azure_rm_virtualmachine:
       resource_group: "{{ resource_group}}"
       name: WebVM
       vm_size: Standard_DS1_v2
       admin_username: "{{ username }}"
-      managed_disk_type: Standard_LRS
-      ssh_password_enabled: true
       admin_password: "{{ password }}"
+      os_disk_name: Web-Disk
+      managed_disk_type: Standard_LRS
+      ssh_public_keys:
+        - path: /home/dxadmin/.ssh/authorized_keys
+          key_data: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDfZCb5l8LvkIxdY4rCiHUbrvy+cyV9/Y+wHHb9WLLgoKqC14cVVEfNaKcA1nmIPp23uWHCVGQBJtcRErnHof6HuB0CsbNhYYy14uO8gOwELFArlnvQ2Ai95iisRA6BaHSdpe/6IEKHgUn3GbwBDFEE4vixdLRVSyL2iTFYixnHc554wMpX1V8Re+EHAxmMAOtGPMnDtaGQNG1PMT4XXLdjUsvZLuR1H+htKqu81+OrJgHYS3Auu+Nu2xksS8UPGqp2UK2fvKpYNn7V4441v3bqVNq5I+/+qCcTiJPg4saWJ7WZujllcLTUVNmjMuhwkPzPBDPe7ZjhCqpiBWacCvIb3p2AQk1EJrKJC13gCb7z+lhtP2B8pA1f85woKlQIdmJwzxLv5MU37d5E4AzYRmtLdidSUT6noc3r8qFN5yCei9XFSvn5cfwXri4r1OrjANSiJ2aYq2zNCR9cVNpIc3YFMuuErhG1Ir7Z1me0gaef9qRAim9xo+Da+GpjxBPMwloIhnRDI17k/k2gseU/PVipNuBfmJ7VSqI3vAj3KZ1YPKfpG4BYFZBDZs6twseG7nkuktpbnKwAmVOBQ2dJm/FybKEA71A/bNi1pyaggMcP7zSsbfk6n+IQimv7YJVLvcb8WWXNaa7W7NF+esv0qhtyniwOTG66SSObXosgnnidKQ== dxadmin@WorkPC
       network_interfaces: VM01-NIC
       image:
         offer: 0001-com-ubuntu-server-jammy
@@ -98,15 +188,18 @@
         enabled: true
         type: managed
 
-  - name: Create VM
+  - name: Create DB VM
     azure_rm_virtualmachine:
       resource_group: "{{ resource_group}}"
       name: DB-VM
       vm_size: Standard_DS1_v2
       admin_username: "{{ username }}"
-      managed_disk_type: Standard_LRS
-      ssh_password_enabled: true
       admin_password: "{{ password }}"
+      os_disk_name: DB-Disk
+      managed_disk_type: Standard_LRS
+      ssh_public_keys:
+        - path: /home/dxadmin/.ssh/authorized_keys
+          key_data: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDfZCb5l8LvkIxdY4rCiHUbrvy+cyV9/Y+wHHb9WLLgoKqC14cVVEfNaKcA1nmIPp23uWHCVGQBJtcRErnHof6HuB0CsbNhYYy14uO8gOwELFArlnvQ2Ai95iisRA6BaHSdpe/6IEKHgUn3GbwBDFEE4vixdLRVSyL2iTFYixnHc554wMpX1V8Re+EHAxmMAOtGPMnDtaGQNG1PMT4XXLdjUsvZLuR1H+htKqu81+OrJgHYS3Auu+Nu2xksS8UPGqp2UK2fvKpYNn7V4441v3bqVNq5I+/+qCcTiJPg4saWJ7WZujllcLTUVNmjMuhwkPzPBDPe7ZjhCqpiBWacCvIb3p2AQk1EJrKJC13gCb7z+lhtP2B8pA1f85woKlQIdmJwzxLv5MU37d5E4AzYRmtLdidSUT6noc3r8qFN5yCei9XFSvn5cfwXri4r1OrjANSiJ2aYq2zNCR9cVNpIc3YFMuuErhG1Ir7Z1me0gaef9qRAim9xo+Da+GpjxBPMwloIhnRDI17k/k2gseU/PVipNuBfmJ7VSqI3vAj3KZ1YPKfpG4BYFZBDZs6twseG7nkuktpbnKwAmVOBQ2dJm/FybKEA71A/bNi1pyaggMcP7zSsbfk6n+IQimv7YJVLvcb8WWXNaa7W7NF+esv0qhtyniwOTG66SSObXosgnnidKQ== dxadmin@WorkPC
       network_interfaces: VM02-NIC
       image:
         offer: 0001-com-ubuntu-server-jammy
