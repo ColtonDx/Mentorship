@@ -22,16 +22,9 @@
   - name: Create virtual network
     azure_rm_virtualnetwork:
       resource_group: "{{ resource_group}}"
-      name: "{{ resource_group }}-Vnet"
+      name: "{{ resource_group }}-VNET"
+      location: westus2
       address_prefixes: "10.0.0.0/16"
-      state: present
-
-  - name: Add subnet
-    azure_rm_subnet:
-      resource_group: "{{ resource_group}}"
-      name: Ansible-Subnet
-      address_prefix: "10.0.0.0/24"
-      virtual_network: "{{ resource_group }}-Vnet"
       state: present
 
   - name: Create network security group
@@ -110,6 +103,15 @@
             source_address_prefix: 104.128.8.121
             source_port_range: "*"
 
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: "{{ resource_group}}"
+      name: "{{ resource_group}}-Subnet"
+      address_prefix: "10.0.0.0/24"
+      virtual_network: "{{ resource_group }}-VNET"
+      security_group_name: "{{ resource_group }}-NSG"
+      state: present
+
   - name: Create public IP address
     azure_rm_publicipaddress:
       resource_group: "{{ resource_group}}"
@@ -128,8 +130,8 @@
     azure_rm_networkinterface:
       resource_group: "{{ resource_group}}"
       name: VM01-NIC
-      virtual_network: "{{ resource_group }}-Vnet"
-      subnet: Ansible-Subnet
+      virtual_network: "{{ resource_group }}-VNET"
+      subnet: "{{ resource_group}}-Subnet"
       security_group: "{{ resource_group }}-NSG"
       ip_configurations:
         - name: ipconfig1
@@ -142,8 +144,8 @@
     azure_rm_networkinterface:
       resource_group: "{{ resource_group}}"
       name: VM02-NIC
-      virtual_network: "{{ resource_group }}-Vnet"
-      subnet: Ansible-Subnet
+      virtual_network: "{{ resource_group }}-VNET"
+      subnet: "{{ resource_group}}-Subnet"
       security_group: "{{ resource_group }}-NSG"
       ip_configurations:
         - name: ipconfig1
